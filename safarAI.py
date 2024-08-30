@@ -1,121 +1,158 @@
 import streamlit as st
-from gemini_model import GeminiModel
+from gemini_model import GeminiModel  # Placeholder for the actual import
 from fpdf import FPDF
 import datetime
 
-# CSS Styling
-def apply_custom_css():
-    st.markdown(
-        """
-        <style>
-        @import url('https://fonts.googleapis.com/css2?family=Overpass:wght@400;600&display=swap');
 
-        body {
-            font-family: 'Overpass', sans-serif;
-            background-color: #D3BCE3;
-            color: #FFD700;
-        }
-        .title {
-            font-size: 2.5em;
-            color: #FFD700;
-            text-align: center;
-        }
-        .subtitle {
-            font-size: 1.5em;
-            background: linear-gradient(90deg, #FFDD00 0%, #FFEA70 100%);
-            -webkit-background-clip: text;
-            color: transparent;
-            text-align: left;
-            margin-bottom: 20px;
-        }
-        .container {
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #FFEA70;
-        }
-        .stButton>button {
-            background: linear-gradient(90deg, #FFC300 0%, #FFDD00 100%) !important;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            text-align: center;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 8px;
-        }
-        .itinerary {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            color: #2B2D42;
-        }
-        .itinerary h3 {
-            color: #FFD700;
-        }
-        .itinerary h4 {
-            color: #6A0DAD;
-        }
-        .itinerary p {
-            font-style: italic;
-        }
-        .question {
-            font-size: 1.3em;
-            color: #FFD700;
-        }
-        .question-input {
-            font-size: 0.9em;
-            padding: 10px;
-        }
-        .input-blink {
-            animation: blink 1s step-end 3;
-        }
-        @keyframes blink {
-            50% {
-                border-color: #FF0000;
-            }
-        }
-        .footer {
-            position: fixed;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            background-color: #6A0DAD;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            font-size: 0.9em;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+# Custom CSS for the design system
+st.markdown(
+    """
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Overpass:wght@400;600&display=swap');
 
-# Function to initialize session state
-def initialize_session_state():
-    if 'responses' not in st.session_state:
-        st.session_state['responses'] = {}
-    if 'page' not in st.session_state:
-        st.session_state['page'] = 0
-    if 'itinerary' not in st.session_state:
-        st.session_state['itinerary'] = ""
-    if 'invalid_msg' not in st.session_state:
-        st.session_state['invalid_msg'] = ""
+    body {
+        font-family: 'Overpass', sans-serif;
+        background-color: black; /* Light grey background color */
+        color: #FA3E01;
+    }
+    .title {
+        font-size: 2.5em;
+        color: #FA3E01;
+        text-align: center;
+    }
+    .subtitle {
+        font-size: 1.5em;
+        background: linear-gradient(90deg, #FF490E 0%, #FF7B02 100%);
+        -webkit-background-clip: text;
+        color: transparent;
+        text-align: left;
+        margin-bottom: 20px;
 
-# Function to generate PDF
-def generate_pdf(itinerary_text, logo_path):
-    itinerary_text = itinerary_text.replace('\u2013', '-').replace('\u2014', '--')
-    subtitle = "\n\nNote: This itinerary is AI-generated and may be subject to change."
-    complete_text = itinerary_text + subtitle
+    }
+    .container {
+        background-color: red;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #ffffff !important; /* White background color */
+    }
+    .stButton>button {
+        background: linear-gradient(90deg, #FF490E 0%, #FF7B02 100%);
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 8px;
+    }
+    .stDownloadButton>button {
+        background: linear-gradient(90deg, #FF490E 0%, #FF7B02 100%);
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 8px;
+    }
+    .itinerary {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        color: #2B2D42;
+    }
+    .itinerary h3 {
+        color: #FA3E01;
+    }
+    .itinerary h4 {
+        color: #1B435A;
+    }
+    .itinerary p {
+        font-style: italic;
+    }
+    .question {
+        font-size: 1.3em;
+        color: #FA3E01;
+    }
+    .footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background-color: #6A0DAD;
+        color: white;
+        text-align: center;
+        padding: 10px;
+        font-size: 0.9em;
+    }
+    .error {
+        border: 2px solid red;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
+# Display the logo
+st.image("logo/safar.ai.png", use_column_width=False, width=75)
+
+# Title and Subtitle
+st.markdown('<div class="subtitle">✨Let AI design your dream adventure in seconds!</div>', unsafe_allow_html=True)
+
+
+# Instructions
+with st.expander("Instructions"):
+    st.write("""
+    1. Enter the starting location.
+    2. Enter the travel destination.
+    3. Provide the starting date.
+    4. Provide the number of nights.
+    5. Specify the trip type.
+    6. Enter the group size.
+    7. Provide budget for the trip.
+    8. Provide any special considerations.
+    """)
+
+placeholder = st.empty()
+
+# Initialize session state
+if 'checklist' not in st.session_state:
+    st.session_state['checklist'] = ""
+
+gemini_model = GeminiModel()
+
+# Function to infer season based on date
+def infer_season(date):
+    if date.month in [12, 1, 2]:
+        return "Winter"
+    elif date.month in [3, 4, 5]:
+        return "Spring"
+    elif date.month in [6, 7, 8]:
+        return "Summer"
+    elif date.month in [9, 10, 11]:
+        return "Autumn"
+
+# Generate PDF
+def generate_pdf(checklist_text, logo_path):
+    # Replace unsupported characters with alternatives
+    checklist_text = checklist_text.replace('\u2013', '-').replace('\u2014', '--')
+
+    subtitle = "\n\nNote: This checklist is AI-generated and may be subject to change."
+    complete_text = checklist_text + subtitle
+    
     class PDF(FPDF):
         def header(self):
-            self.image(logo_path, 10, 8, 33)
+            self.image(logo_path, 10, 8, 33)  # Adjust the position and size as needed
             self.set_font("Arial", 'B', 12)
             self.cell(0, 10, 'Itinerary', ln=True, align='C')
             self.ln(20)
-
+    
     pdf = PDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
@@ -123,102 +160,144 @@ def generate_pdf(itinerary_text, logo_path):
     
     return pdf.output(dest='S').encode('latin-1')
 
-# Function to format itinerary
-def format_itinerary(itinerary):
-    days = itinerary.split('##')
-    formatted_itinerary = ""
-    for day in days:
-        if day.strip():
-            formatted_itinerary += f"<div class='itinerary'>{day.strip()}</div>"
-    formatted_itinerary += "<div class='itinerary'><p><em>Note: This itinerary is AI-generated and may be subject to change.</em></p></div>"
-    return formatted_itinerary
+def format_checklist(checklist):
+    # Splitting the generated checklist by lines and reformatting it as HTML
+    items = checklist.split('##')
+    formatted_checklist = ""
+    for item in items:
+        if item.strip():
+            formatted_checklist += f"<div class='itinerary'>{item.strip()}</div>"
+    formatted_checklist += "<div class='itinerary'><p><em>Note: This checklist is AI-generated and may be subject to change.</em></p></div>"
+    return formatted_checklist
 
-# Function to handle the form and page navigation
-def handle_form_navigation(questions):
-    if st.session_state.page < len(questions):
-        question, key, input_type = questions[st.session_state.page]
+# Function to make a field blink red
+def blink_field(field_key):
+    js_code = f"""
+    <script>
+    var field = document.querySelectorAll('[key="{field_key}"]');
+    if (field.length > 0) {{
+        for (var i = 0; i < 3; i++) {{
+            setTimeout(function() {{ field[0].classList.add('error'); }}, i * 300);
+            setTimeout(function() {{ field[0].classList.remove('error'); }}, i * 600 + 300);
+        }}
+    }}
+    </script>
+    """
+    st.markdown(js_code, unsafe_allow_html=True)
 
-        with st.form(key=f'form_{st.session_state.page}'):
-            st.markdown(f'<div class="question">{question}</div>', unsafe_allow_html=True)
-            response = st.date_input("", key=key, label_visibility="collapsed") if input_type == "date" else st.text_input("", key=key, label_visibility="collapsed")
+# Only show the form if the checklist hasn't been generated
+if not st.session_state['checklist']:
+    with placeholder.form(key='travel_form'):
+        st.markdown('<div class="question">Where are you starting your trip from?</div>', unsafe_allow_html=True)
+        starting_location = st.text_input("", key="starting_location", label_visibility="hidden")
 
-            if st.session_state['invalid_msg']:
-                st.markdown(f'<div style="color: red; font-weight: bold;">{st.session_state["invalid_msg"]}</div>', unsafe_allow_html=True)
+        st.markdown('<div class="question">What is your travel destination? (You can specify multiple locations.)</div>', unsafe_allow_html=True)
+        destination = st.text_input("", key="destination", label_visibility="hidden")
 
-            next_clicked = st.form_submit_button('Next')
+        st.markdown('<div class="question">When will your trip begin?</div>', unsafe_allow_html=True)
+        start_date = st.date_input("", key="start_date", label_visibility="hidden")
 
-            if next_clicked:
-                if response:
-                    st.session_state.responses[key] = response
-                    st.session_state.page += 1
-                    st.session_state['invalid_msg'] = ""
-                    st.experimental_rerun()
-                else:
-                    st.session_state['invalid_msg'] = "This field is required! Please enter a valid response."
-                    st.experimental_rerun()
-    else:
-        display_itinerary()
+        st.markdown('<div class="question">How many nights will your stay be?</div>', unsafe_allow_html=True)
+        nights = st.number_input("", key="nights", label_visibility="hidden", min_value=1)
 
-# Function to display the itinerary
-def display_itinerary():
-    st.write("Thank you for sharing the details! I'm now crafting the perfect, most realistic itinerary just for you...")
-    responses = st.session_state.responses
-    prompt = gemini_model.create_prompt(responses)
-    st.session_state.itinerary = gemini_model.generate_itinerary(prompt)
+        st.markdown('<div class="question">What kind of trip are you planning?</div>', unsafe_allow_html=True)
+        trip_type = st.selectbox("", ["Adventure", "Leisure", "Family", "Business"], key="trip_type", label_visibility="hidden")
 
-    if st.session_state.itinerary:
-        formatted_itinerary = format_itinerary(st.session_state.itinerary)
-        st.markdown(f'<div class="itinerary"><h4>Itinerary for {responses["locations"]}, {int(responses["nights"])+1} days</h4>{formatted_itinerary}</div>', unsafe_allow_html=True)
+        st.markdown('<div class="question">How many people will be traveling with you?</div>', unsafe_allow_html=True)
+        group_size = st.number_input("", key="group_size", label_visibility="hidden", min_value=1)
 
-        pdf_content = generate_pdf(st.session_state.itinerary, "logo/logo.png")
-        st.download_button(
-            label="Download Itinerary as PDF",
-            data=pdf_content,
-            file_name=f"itinerary_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
-            mime="application/pdf"
-        )
-    else:
-        st.error("There was an issue generating the itinerary. Please try again.")
+        st.markdown('<div class="question">What is your budget for this trip (in USD)?</div>', unsafe_allow_html=True)
+        budget = st.number_input("", key="budget", label_visibility="hidden", min_value=0)
 
-# Main app structure
-def main():
-    apply_custom_css()
-    initialize_session_state()
+        st.markdown('<div class="question">Do you have any special considerations for your trip?</div>', unsafe_allow_html=True)
+        special_considerations = st.selectbox("", [
+            "None",
+            "I have a child with me",
+            "I have a motor disability",
+            "I have dietary restrictions (e.g., vegetarian, halal, gluten-free)",
+            "I require wheelchair access",
+            "I need medical assistance (e.g., carrying medications, first aid)",
+            "I prefer low-altitude destinations",
+            "I am traveling with a pet",
+            "I have a fear of heights",
+            "I prefer shorter walking distances",
+            "I need quiet or noise-sensitive environments"
+        ], key="special_considerations", label_visibility="hidden")
 
-    st.image("logo/safar.ai.png", use_column_width=False, width=75)
-    st.markdown('<div class="subtitle">&#127760;✨ Let AI design your dream adventure in seconds!</div>', unsafe_allow_html=True)
+        submit_button = st.form_submit_button(label='Generate Checklist')
 
-    with st.expander("Instructions"):
-        st.write("""
-        1. Enter the travel destination.
-        2. Enter the starting location.
-        3. Enter the start date.
-        4. Enter the number of nights.
-        5. Select the type of accommodation.
-        6. Specify the type of trip.
-        7. Enter the group size.
-        """)
+    if submit_button:
+        # Check for missing fields
+        missing_fields = []
+        if not starting_location:
+            missing_fields.append("starting_location")
+        if not destination:
+            missing_fields.append("destination")
+        if not start_date:
+            missing_fields.append("start_date")
+        if not nights:
+            missing_fields.append("nights")
+        if not trip_type:
+            missing_fields.append("trip_type")
+        if not group_size:
+            missing_fields.append("group_size")
+        if not budget:
+            missing_fields.append("budget")
+        if not special_considerations:
+            missing_fields.append("special_considerations")
 
-    questions = [
-        ("Where do you want to travel in the World? (You can enter multiple locations.)", 'locations', 'text'),
-        ("What is your starting location?", 'starting_location', 'text'),
-        ("When does your trip start?", 'start_date', 'date'),
-        ("How many nights will you be traveling?", 'nights', 'text'),
-        ("Do you prefer high-end or economy accommodations?", 'accommodations', 'text'),
-        ("Would you like the trip to be adventure-centric or laid-back?", 'type', 'text'),
-        ("How many people are in your group?", 'group_size', 'text')
-    ]
+        if missing_fields:
+            st.error("Missing information. Please fill in all fields.")
+        else:
+            responses = {
+                'destination': destination,
+                'starting_location': starting_location,
+                'start_date': start_date,
+                'nights': nights,
+                'trip_type': trip_type,
+                'group_size': group_size,
+                'budget': budget,
+                'special_considerations': special_considerations
+            }
+            st.session_state['responses'] = responses
 
-    handle_form_navigation(questions)
+            # Calculate the number of days based on start date and nights
+            start_date = responses['start_date']
+            nights = int(responses['nights'])
+            end_date = start_date + datetime.timedelta(days=nights)
 
-    if st.session_state.page > 0 and st.session_state.page < len(questions):
-        if st.button('Previous'):
-            st.session_state.page -= 1
-            st.session_state['invalid_msg'] = ""
-            st.experimental_rerun()
+            # Infer season
+            season = infer_season(start_date)
 
-st.markdown('<div class="footer">All rights reserved | Created by Abhishek 😊</div>', unsafe_allow_html=True)
+            # Generate the prompt based on user input
+            prompt = (
+                f"Starting from {responses['starting_location']}, generate a travel itinerary for a "
+                f"{nights}-night {trip_type.lower()} trip to {destination} starting on {start_date}. "
+                f"The group size is {group_size} with a budget of {budget} USD. It's {season}. Special considerations: {special_considerations}."
+            )
+            try:
+                st.session_state['checklist'] = gemini_model.generate_checklist(prompt)
+                placeholder.empty()
+            except Exception as e:
+                st.error("Error generating the checklist. Please try again later.")
+                st.error(str(e))
 
 
-if __name__ == "__main__":
-    main()
+# If a checklist has been generated, display and offer to download it as a PDF
+if st.session_state['checklist']:
+    formatted_checklist = format_checklist(st.session_state['checklist'])
+    st.markdown(formatted_checklist, unsafe_allow_html=True)
+    download_button = st.download_button(
+        label="Download Itinerary as PDF",
+        data=generate_pdf(st.session_state['checklist'], "logo/safar.ai.png"),
+        file_name="itinerary.pdf",
+        mime="application/pdf"
+    )
+    # Button to plan a new trip
+    if st.button("Plan New Trip"):
+        st.session_state['checklist'] = ""
+        st.rerun()
+
+
+# Footer with acknowledgment
+st.markdown('<div class="footer">All rights reserved | Made with ❤️ by Abhishek</div>', unsafe_allow_html=True)
