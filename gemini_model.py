@@ -1,5 +1,4 @@
 import logging
-import os
 import google.generativeai as genai
 
 class GeminiModel:
@@ -46,7 +45,6 @@ class GeminiModel:
             "   - Consider road conditions and possible delays to ensure a smooth travel experience. Suggest flights when road conditions are unfavorable, such as during the monsoon season.\n"
             "Remember to balance the activities with some leisure time, especially for laid-back trips. Ensure the itinerary is both practical and enjoyable."
         )
-
 
         logging.debug(f"Prompt created: {prompt}")
         return prompt

@@ -3,7 +3,6 @@ from gemini_model import GeminiModel  # Placeholder for the actual import
 from fpdf import FPDF
 import datetime
 
-
 # Custom CSS for the design system
 st.markdown(
     """
@@ -16,71 +15,91 @@ st.markdown(
     body {
         font-family: 'Overpass', sans-serif;
     }
+
     .title {
         font-size: 2.5em;
-        color: #FA3E01;
+        color: #0000FF;
         text-align: center;
     }
+
     .subtitle {
         font-size: 1.5em;
-        background: linear-gradient(90deg, #FF490E 0%, #FF7B02 100%);
+        background: linear-gradient(90deg, #FFD700 0%, #0000FF 10%);
         -webkit-background-clip: text;
         color: transparent;
         text-align: left;
         margin-bottom: 20px;
-
     }
+
     .container {
-        background-color: red;
+        background-color: white;
         padding: 20px;
         border-radius: 10px;
-        background-color: #ffffff !important; /* White background color */
+        background-color: #990000 !important; /* White background color */
     }
+
     .stButton>button {
-        background: linear-gradient(90deg, #FF490E 0%, #FF7B02 100%);
+        background-image: linear-gradient(to right, #E55D87 0%, #5FC3E4 51%, #E55D87 100%);
+        background-size: 200% auto;
         border: none;
         color: white;
-        padding: 10px 20px;
+        padding: 15px 45px; /* Adjust padding to match your .btn-grad */
         text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-        border-radius: 8px;
+        text-transform: uppercase; /* Match text transform */
+        transition: 0.5s; /* Add transition for smooth hover effect */
+        border-radius: 10px; /* Match border-radius */
+        display: block;
+        box-shadow: 0 0 20px #eee; /* Add box-shadow */
+        margin: 10px; /* Adjust margin to match your .btn-grad */
     }
+
+    .stButton>button:hover {
+        background-position: right center; /* Change the direction of the gradient */
+        color: #fff;
+        text-decoration: none;
+    }
+
     .stDownloadButton>button {
-        background: linear-gradient(90deg, #FF490E 0%, #FF7B02 100%);
+        background-image: linear-gradient(to right, #1FA2FF 0%, #12D8FA 51%, #1FA2FF 100%);
         border: none;
         color: white;
-        padding: 10px 20px;
+        padding: 15px 45px;
         text-align: center;
-        text-decoration: none;
-        display: inline-block;
+        text-transform: uppercase;
+        transition: 0.5s;
+        background-size: 200% auto;
+        box-shadow: 0 0 20px #eee;
+        border-radius: 10px;
+        display: block;
         font-size: 16px;
-        margin: 4px 2px;
+        margin: 10px;
         cursor: pointer;
-        border-radius: 8px;
     }
+
     .itinerary {
         background-color: white;
         padding: 20px;
         border-radius: 10px;
         color: #2B2D42;
     }
+
     .itinerary h3 {
         color: #FA3E01;
     }
+
     .itinerary h4 {
         color: #1B435A;
     }
+
     .itinerary p {
         font-style: italic;
     }
+
     .question {
         font-size: 1.3em;
-        color: #FA3E01;
+        color: #990000;
     }
+
     .footer {
         position: fixed;
         left: 0;
@@ -92,6 +111,7 @@ st.markdown(
         padding: 10px;
         font-size: 0.9em;
     }
+
     .error {
         border: 2px solid red;
     }
@@ -101,7 +121,7 @@ st.markdown(
 )
 
 # Display the logo
-st.image("logo/safar.ai.png", use_column_width=False, width=75)
+st.image("logo/safar.ai.png", use_column_width=False, width=105)
 
 # Title and Subtitle
 st.markdown('<div class="subtitle">✨Let AI design your dream adventure in seconds!</div>', unsafe_allow_html=True)
@@ -228,36 +248,26 @@ if not st.session_state['checklist']:
 
     if submit_button:
         # Check for missing fields
-        missing_fields = []
-        if not starting_location:
-            missing_fields.append("starting_location")
-        if not destination:
-            missing_fields.append("destination")
-        if not start_date:
-            missing_fields.append("start_date")
-        if not nights:
-            missing_fields.append("nights")
-        if not trip_type:
-            missing_fields.append("trip_type")
-        if not group_size:
-            missing_fields.append("group_size")
-        if not budget:
-            missing_fields.append("budget")
-        if not special_considerations:
-            missing_fields.append("special_considerations")
+        missing_fields = [
+            key for key in ["starting_location", "destination", "start_date", "nights", "trip_type", "group_size", "budget", "special_considerations"]
+            if not st.session_state.get(key)
+        ]
 
         if missing_fields:
-            st.error("Missing information. Please fill in all fields.")
+            for field_key in missing_fields:
+                blink_field(field_key)
+            st.error("Please fill out all fields before submitting.")
         else:
+            # Process form data
             responses = {
-                'destination': destination,
-                'starting_location': starting_location,
-                'start_date': start_date,
-                'nights': nights,
-                'trip_type': trip_type,
-                'group_size': group_size,
-                'budget': budget,
-                'special_considerations': special_considerations
+                "starting_location": starting_location,
+                "destination": destination,
+                "start_date": start_date,
+                "nights": nights,
+                "trip_type": trip_type,
+                "group_size": group_size,
+                "budget": budget,
+                "special_considerations": special_considerations
             }
             st.session_state['responses'] = responses
 
@@ -297,7 +307,6 @@ if st.session_state['checklist']:
     if st.button("Plan New Trip"):
         st.session_state['checklist'] = ""
         st.rerun()
-
 
 # Footer with acknowledgment
 st.markdown('<div class="footer">All rights reserved | Made with ❤️ by Abhishek</div>', unsafe_allow_html=True)
