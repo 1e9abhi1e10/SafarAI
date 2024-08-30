@@ -9,11 +9,12 @@ st.markdown(
     """
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Overpass:wght@400;600&display=swap');
+    [data-testid="stSidebar"] {
+        background-color: var(--primary-color) !important;
+    }
 
     body {
         font-family: 'Overpass', sans-serif;
-        background-color: black; /* Light grey background color */
-        color: #FA3E01;
     }
     .title {
         font-size: 2.5em;
@@ -104,7 +105,6 @@ st.image("logo/safar.ai.png", use_column_width=False, width=75)
 
 # Title and Subtitle
 st.markdown('<div class="subtitle">✨Let AI design your dream adventure in seconds!</div>', unsafe_allow_html=True)
-
 
 # Instructions
 with st.expander("Instructions"):
