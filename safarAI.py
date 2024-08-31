@@ -38,7 +38,8 @@ st.markdown(
         background-color: #990000 !important; /* White background color */
     }
 
-    .stButton>button {
+    /* For regular buttons */
+    .stButton>button, .stForm button[type="submit"] {
         background-image: linear-gradient(to right, #E55D87 0%, #5FC3E4 51%, #E55D87 100%) !important;
         background-size: 200% auto !important;
         border: none !important;
@@ -53,7 +54,8 @@ st.markdown(
         margin: 10px !important;
     }
 
-    .stButton>button:hover {
+    /* For hovered buttons */
+    .stButton>button:hover, .stForm button[type="submit"]:hover {
         background-position: right center !important;
         color: #fff !important;
         text-decoration: none !important;
