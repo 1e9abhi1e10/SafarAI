@@ -1,5 +1,9 @@
 # SafarAI
-Visit the currently deployed version
+Visit the currently deployed version [**here**](https://safar-ai.streamlit.app/)
+
+
+https://github.com/user-attachments/assets/8123c824-b05f-413e-aea1-819957508e23
+
 
 **SafarAI** is a travel planning application designed to generate detailed itineraries and travel checklists using advanced AI models. The application uses the Gemini model from Google Generative AI to create practical and enjoyable travel plans based on user inputs.
 
@@ -15,7 +19,7 @@ Visit the currently deployed version
 ```
 SafarAI/
 │
-├── gemini_model.py        # Contains the GeminiModel class for generating itineraries and checklists
+├── gemini_travel.py        # Contains the GeminiModel class for generating itineraries and checklists
 ├── safarAI.py             # Streamlit application for user interaction
 ├── requirements.txt       # Dependencies for the project
 └── README.md              # This file
@@ -139,7 +143,7 @@ Please ensure your code adheres to the existing style and includes appropriate t
 
 ## License
 
-**SafarAI** is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+**SafarAI** is licensed under the MIT License. See the [LICENSE](https://github.com/1e9abhi1e10/SafarAI/blob/master/LICENSE) file for more details.
 
 ## Acknowledgements
 
