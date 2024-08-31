@@ -1,5 +1,5 @@
 import streamlit as st
-from gemini_model import GeminiModel  # Placeholder for the actual import
+from gemini_travel import GeminiModel
 from fpdf import FPDF
 import datetime
 
