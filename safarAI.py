@@ -39,23 +39,24 @@ st.markdown(
     }
 
     .stButton>button {
-        background-image: linear-gradient(to right, #E55D87 0%, #5FC3E4 51%, #E55D87 100%);
-        background-size: 200% auto;
-        border: none;
-        color: white;
-        padding: 15px 45px; /* Adjust padding to match your .btn-grad */
-        text-align: center;
-        text-transform: uppercase; /* Match text transform */
-        transition: 0.5s; /* Add transition for smooth hover effect */
-        border-radius: 10px; /* Match border-radius */
-        display: block;
-        box-shadow: 0 0 20px #eee; /* Add box-shadow */
-        margin: 10px; /* Adjust margin to match your .btn-grad */
+        background-image: linear-gradient(to right, #E55D87 0%, #5FC3E4 51%, #E55D87 100%) !important;
+        background-size: 200% auto !important;
+        border: none !important;
+        color: white !important;
+        padding: 15px 45px !important;
+        text-align: center !important;
+        text-transform: uppercase !important;
+        transition: 0.5s !important;
+        border-radius: 10px !important;
+        display: block !important;
+        box-shadow: 0 0 20px #eee !important;
+        margin: 10px !important;
     }
+
     .stButton>button:hover {
-        background-position: right center; /* Change the direction of the gradient */
-        color: #fff;
-        text-decoration: none;
+        background-position: right center !important;
+        color: #fff !important;
+        text-decoration: none !important;
     }
 
     .stDownloadButton>button {
