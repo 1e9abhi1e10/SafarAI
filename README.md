@@ -1,5 +1,7 @@
 # SafarAI
-Visit the currently deployed version [**here**](https://safar-ai.streamlit.app/)
+This is the Atlan Engineering Fellowship Task - 2024:
+SafarAI: Personalized Travel Itinerary Generator.
+### Visit the currently deployed version [**here**](https://safar-ai.streamlit.app/)
 
 ![atlan-gif](https://github.com/user-attachments/assets/956e33bc-8bee-43d8-b19a-ac5f3cc0915c)
 
@@ -79,54 +81,9 @@ With the **Instructions** expander in the web application:
 
 ## Example Output
 
-### 6-Night Adventure Trip to Indore from Paris: Summer 2024
+### Here is the output for the 2-Night Mumbai Adventure on a Budget $500 (August 31st, 2024)
 
-**Day 1: August 31st - Paris to Indore (Arrival and Orientation)**
-
-* **Morning:** Depart from Paris Charles de Gaulle Airport (CDG) on a flight to Indore's Devi Ahilya Bai Holkar Airport (IDR).
-* **Afternoon:** Upon arrival, settle into your hotel in Indore. Consider a hotel near the central Rajwada area for easy access to sightseeing.
-* **Evening:** Take a walk around the bustling Rajwada Market, exploring local shops and experiencing the vibrant atmosphere. Enjoy dinner at one of the many restaurants serving authentic Indian cuisine.
-
-**Day 2: September 1st - Indore's Heritage and Culture**
-
-* **Morning:** Start your day by visiting the majestic Rajwada Palace, a historical marvel showcasing the rich heritage of the Holkar dynasty.
-* **Afternoon:** Explore the Khajrana Ganesh Temple, a revered Hindu temple dedicated to Lord Ganesha.
-* **Evening:** Indulge in a traditional Indian street food experience at Sarafa Bazaar, known for its delicious snacks and vibrant atmosphere.
-
-**Day 3: September 2nd - The Beauty of Kanha National Park**
-
-* **Morning:** Embark on a day trip to Kanha National Park, a renowned wildlife sanctuary known for its diverse flora and fauna.
-* **Afternoon:** Enjoy a jeep safari within the park, witnessing tigers, leopards, deer, and various bird species in their natural habitat.
-* **Evening:** Return to Indore and enjoy a peaceful evening at your hotel.
-
-**Day 4: September 3rd - Spirituality and History**
-
-* **Morning:** Visit the serene Jain temple of Shri Digambar Jain Lal Mandir, known for its intricate carvings and peaceful ambience.
-* **Afternoon:** Explore the Indore Museum, showcasing a collection of artifacts and exhibits related to the city's history and culture.
-* **Evening:** Experience a traditional Indian dance performance at a cultural center in the city.
-
-**Day 5: September 4th - Local Experiences**
-
-* **Morning:** Learn the art of traditional Indian cooking with a hands-on cooking class at a local home.
-* **Afternoon:** Visit the vibrant Central Market, known for its lively atmosphere and variety of products.
-* **Evening:** Relax and enjoy a delicious dinner at a rooftop restaurant offering panoramic views of the city.
-
-**Day 6: September 5th - Departure**
-
-* **Morning:** Enjoy a leisurely breakfast at your hotel.
-* **Afternoon:** Transfer to the airport for your flight back to Paris.
-
-**Notes:**
-
-* This itinerary can be customized based on your individual interests and preferences.
-* Be sure to book accommodations and transportation in advance, especially during peak season.
-* Pack light and comfortable clothing suitable for the warm Indian climate.
-* Always carry a water bottle and stay hydrated, especially during outdoor activities.
-* Learn basic Hindi phrases for easier communication with locals.
-
-**Enjoy your adventurous journey to Indore!**
-
-Note: This checklist is AI-generated and may be subject to change.
+![image](https://github.com/user-attachments/assets/84647d5d-4ecc-4427-8749-3c32b5f0634b)
 
 ## Contributing
 
