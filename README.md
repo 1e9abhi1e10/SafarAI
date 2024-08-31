@@ -1,9 +1,7 @@
 # SafarAI
 Visit the currently deployed version [**here**](https://safar-ai.streamlit.app/)
 
-
-https://github.com/user-attachments/assets/8123c824-b05f-413e-aea1-819957508e23
-
+![atlan-gif](https://github.com/user-attachments/assets/956e33bc-8bee-43d8-b19a-ac5f3cc0915c)
 
 **SafarAI** is a travel planning application designed to generate detailed itineraries and travel checklists using advanced AI models. The application uses the Gemini model from Google Generative AI to create practical and enjoyable travel plans based on user inputs.
 
