@@ -1,3 +1,0 @@
-streamlit
-fpdf
-google-generativeai
