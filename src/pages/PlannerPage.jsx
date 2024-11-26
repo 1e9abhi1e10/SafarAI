@@ -9,7 +9,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { TravelItinerary } from "../model/ItineraryResponse";
 import { useNavigate } from 'react-router-dom';
 import Lottie from "lottie-react";
-import travelLoaderAnimation from "../assets/loading_.json"
+import travelLoaderAnimation from "../assets/loading_.json";
+
 import { Card } from "../components/ui/card";
 
 export default function PlannerPage() {
