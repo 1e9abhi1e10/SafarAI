@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../services/api';
 import { Card } from "../components/ui/card"; // Adjust this import based on your setup
 
 const LoginPage = () => {
@@ -11,14 +11,21 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Check if user exists
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/login`, { email, password });
-      localStorage.setItem('token', response.data.token);
-    
+      if (!email || !password) {
+        alert('Please enter both email and password');
+        return;
+      }
+      const response = await api.post('/auth/login', { email, password });
+      const token = response?.data?.token || response?.data?.tempToken;
+      if (!token) {
+        throw new Error('Invalid response from server');
+      }
+      localStorage.setItem('token', token);
       window.location.href = '/new-trip';
     } catch (error) {
       console.log(error);
-      alert('Login failed');
+      const message = error?.response?.data?.message || 'Login failed. Please check your credentials.';
+      alert(message);
     }
   };
 
