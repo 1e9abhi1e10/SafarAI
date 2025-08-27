@@ -200,6 +200,15 @@ app.post('/api/ai/vendor-links', (req, res) => {
   });
 });
 
+// Convenience GET endpoints for browser checks
+app.get('/', (_req, res) => {
+  res.json({ status: 'ok', service: 'TripMate Mock API', routes: ['/api/*'] });
+});
+
+app.get('/api/auth/continue', (_req, res) => {
+  res.json({ ok: true, hint: 'Use POST /api/auth/continue from the app' });
+});
+
 app.listen(PORT, () => {
   console.log(`Mock API running on http://localhost:${PORT}/api`);
 });
