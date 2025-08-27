@@ -4,7 +4,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import axios from "axios";
+import api from "../../services/api";
 import 'react-datepicker/dist/react-datepicker.css';
 import { TravelItinerary } from "../model/ItineraryResponse";
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +17,7 @@ export default function PlannerPage() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [destinationPlace, setDestinationPlace] = useState('');
+  const [startLocation, setStartLocation] = useState('');
   const [budget, setBudget] = useState('');
   const [travelStyle, setTravelStyle] = useState('');
   const [interestsNew, setInterestsNew] = useState('Nature,Adventure,Famous Landmarks');
@@ -46,8 +47,8 @@ export default function PlannerPage() {
     setLoading(true); // Start loading animation
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/getPlaces`,
+      const response = await api.post(
+        `/getPlaces`,
         {
           destinationCountry: destinationPlace,
           budget,
@@ -58,13 +59,8 @@ export default function PlannerPage() {
           activityType,
           cuisineType,
           tripDuration,
-          language
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+          language,
+          startLocation
         }
       );
       
@@ -76,6 +72,7 @@ export default function PlannerPage() {
       }
     } catch (error) {
       console.error('Error fetching itinerary:', error);
+      alert(error?.response?.data?.message || 'Failed to create trip');
     } finally {
       setLoading(false); // Stop loading animation
     }
@@ -141,6 +138,10 @@ export default function PlannerPage() {
         <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-6">
           <div className="flex-1 space-y-6">
             <div className="space-y-2">
+              <Label htmlFor="from">Where are you starting from?</Label>
+              <Input id="from" placeholder="e.g., Bangalore" value={startLocation} onChange={(e)=>setStartLocation(e.target.value)} />
+            </div>
+            <div className="space-y-2 pt-2">
               <Label htmlFor="city">Where do you want to go?</Label>
               <Select
                 id="city"
@@ -248,20 +249,35 @@ export default function PlannerPage() {
           </div>
           <div className="flex-1 space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="start-date">When do you want to go?</Label>
-              <div className="flex space-x-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="start-date">Start Date</Label>
+                <Label htmlFor="end-date">End Date</Label>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
                 <Input
                   id="start-date"
                   type="date"
                   placeholder="Start Date"
                   value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                  onChange={(e) => {
+                    const sd = e.target.value;
+                    setStartDate(sd);
+                    if (endDate && new Date(sd) > new Date(endDate)) {
+                      alert('Start date cannot be after end date');
+                      setEndDate('');
+                      setTripDuration('');
+                    } else if (endDate) {
+                      setTripDuration(countDays(sd, endDate));
+                    }
+                  }}
                 />
                 <Input
                   id="end-date"
                   type="date"
                   placeholder="End Date"
                   value={endDate}
+                  min={startDate || new Date().toISOString().split('T')[0]}
                   onChange={(e) => {
                     setEndDate(e.target.value);
                     setTripDuration(countDays(startDate, e.target.value));
@@ -287,7 +303,12 @@ export default function PlannerPage() {
             <div className="flex-1"></div>
           </div>
         </form>
-        <Button type="submit" className="w-full bg-green-600 text-white mt-6" onClick={handleSubmit}>Create New Trip</Button>
+        <Button type="submit" className="w-full bg-green-600 text-white mt-6" onClick={(e)=>{
+          if (!startDate || !endDate) { alert('Please select start and end dates'); return; }
+          if (new Date(startDate) < new Date(new Date().toISOString().split('T')[0])) { alert('Start date cannot be in the past'); return; }
+          if (new Date(endDate) <= new Date(startDate)) { alert('End date must be after start date'); return; }
+          handleSubmit(e);
+        }}>Create New Trip</Button>
         <p className="mt-4 text-sm text-center text-muted-foreground">
           By clicking Create New Trip, you agree to our{" "}
           <a href="#" className="text-red-500">
@@ -305,6 +326,14 @@ export default function PlannerPage() {
           </div>
         )}
       </Card>
+    <div className="w-full max-w-3xl text-xs text-muted-foreground mt-2">
+      <div className="flex flex-wrap gap-3">
+        <a className="underline" href="https://www.google.com/travel/flights" target="_blank" rel="noreferrer">Google Flights</a>
+        <a className="underline" href="https://www.skyscanner.net/" target="_blank" rel="noreferrer">Skyscanner</a>
+        <a className="underline" href="https://www.kayak.com/flights" target="_blank" rel="noreferrer">KAYAK</a>
+        <a className="underline" href="https://www.makemytrip.com/flights/" target="_blank" rel="noreferrer">MakeMyTrip</a>
+      </div>
+    </div>
     </div>
   );
   

@@ -1,37 +1,39 @@
 
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/api";
 import { Card } from "../components/ui/card";
 export default function SignUpPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const baseUrl = import.meta.env.VITE_BASE_URL;
+    const baseUrl = import.meta.env.VITE_BASE_URL; // kept for any absolute-URL needs
     const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-        let response = await axios.post(`${baseUrl}/auth/signup`, { email, password });
-        if(response.data.tempToken!='undefined'){
-          localStorage.setItem('token', response.data.token);
-          window.location.href = '/new-trip';
-        }
+        const response = await api.post(`/auth/signup`, { email, password });
+        const token = response?.data?.token || response?.data?.tempToken;
+        if (!token) throw new Error('Invalid signup response');
+        localStorage.setItem('token', token);
+        window.location.href = '/new-trip';
       } catch (error) {
         console.log(error);
-        alert('Signup failed');
+        const message = error?.response?.data?.message || 'Signup failed';
+        alert(message);
       }
     };
 
     const handleContinue = async (e) => {
       e.preventDefault();
       try {
-        let response = await axios.post(`${baseUrl}/auth/continue`, {});
-        if(response.data.tempToken!='undefined'){
-          localStorage.setItem('token', response.data.tempToken);
-          window.location.href = '/new-trip';
-        }
+        const response = await api.post(`/auth/continue`, {});
+        const token = response?.data?.tempToken || response?.data?.token;
+        if (!token) throw new Error('Invalid continue response');
+        localStorage.setItem('token', token);
+        window.location.href = '/new-trip';
       } catch (error) {
         console.log(error);
-        alert('Something Went wrong');
+        const message = error?.response?.data?.message || 'Something went wrong';
+        alert(message);
       }
     };
 
