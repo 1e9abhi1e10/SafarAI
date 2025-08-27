@@ -30,6 +30,10 @@ export default function PlannerPage() {
   const navigate = useNavigate(); // Hook to navigate
   const [itinerary, setItinerary] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [botLoading, setBotLoading] = useState(false);
+  const [botMessages, setBotMessages] = useState([]);
+  const [aiPlan, setAiPlan] = useState(null);
+  const [vendorLinks, setVendorLinks] = useState({ flights: [], hotels: [] });
 
   const token = localStorage.getItem('token');
   console.log('Retrieved Token:', token);
@@ -75,6 +79,43 @@ export default function PlannerPage() {
       alert(error?.response?.data?.message || 'Failed to create trip');
     } finally {
       setLoading(false); // Stop loading animation
+    }
+  };
+
+  const handleAskAI = async () => {
+    setBotLoading(true);
+    try {
+      const { data } = await api.post('/ai/plan', {
+        startLocation,
+        destinationCountry: destinationPlace,
+        startDate,
+        endDate,
+        budget,
+        tripDuration,
+        travelStyle,
+        interests: interestsNew
+      });
+      setAiPlan(data);
+      const summary = [
+        data.overview,
+        data.flightWindows?.length ? `Flights: ${data.flightWindows[0].departWindow} / ${data.flightWindows[0].returnWindow}` : '',
+        data.hotelAreas?.length ? `Hotel areas: ${data.hotelAreas.map(a=>a.area).join(', ')}` : '',
+        data.tips?.length ? `Tips: ${data.tips.slice(0,3).join(' · ')}` : ''
+      ].filter(Boolean).join('\n');
+      setBotMessages(prev => [...prev, { role: 'assistant', content: summary }]);
+    } catch (e) {
+      setBotMessages(prev => [...prev, { role: 'assistant', content: 'Unable to fetch suggestions right now.' }]);
+    } finally {
+      setBotLoading(false);
+    }
+  };
+
+  const handleVendorLinks = async () => {
+    try {
+      const { data } = await api.post('/ai/vendor-links', { startLocation, destinationCountry: destinationPlace, startDate, endDate });
+      setVendorLinks(data);
+    } catch (e) {
+      setVendorLinks({ flights: [], hotels: [] });
     }
   };
 
@@ -127,14 +168,35 @@ export default function PlannerPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4"
       style={{
-        backgroundImage: `url(./bg1.svg)`,
+        backgroundImage: [
+          'radial-gradient(60rem 60rem at 20% 15%, rgba(59, 130, 246, 0.25), transparent 50%)',
+          'radial-gradient(50rem 50rem at 80% 20%, rgba(244, 114, 182, 0.25), transparent 55%)',
+          'radial-gradient(45rem 45rem at 30% 85%, rgba(16, 185, 129, 0.25), transparent 45%)',
+          'linear-gradient(135deg, #f8fafc 0%, #fff7ed 100%)'
+        ].join(', '),
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
       }}
     >
-      <h1 className="text-2xl font-bold text-center mb-4">Plan your next adventure</h1>
-      <Card className="relative w-full max-w-3xl p-6 bg-white bg-opacity-100">
+      <div className="flex items-center justify-between w-full max-w-5xl mb-4">
+        <h1 className="text-2xl font-bold">Plan your next adventure</h1>
+        <div className="relative flex items-center gap-2">
+          <Button className="bg-cyan-600 hover:bg-cyan-700 text-white" onClick={(e)=>{ e.preventDefault(); navigate('/contact'); }}>Contact us</Button>
+          <Button variant="outline" onClick={(e)=>{
+            e.preventDefault();
+            const win = window.open('about:blank','_blank');
+            if (win) {
+              // Open multiple tabs sequentially
+              win.location.href = 'https://www.google.com/travel/flights';
+              window.open('https://www.skyscanner.net/','_blank');
+              window.open('https://www.kayak.com/flights','_blank');
+              window.open('https://www.makemytrip.com/flights/','_blank');
+            }
+          }}>Book Flights</Button>
+        </div>
+      </div>
+      <Card className="relative w-full max-w-5xl p-6 bg-white bg-opacity-100">
         <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-6">
           <div className="flex-1 space-y-6">
             <div className="space-y-2">
@@ -193,6 +255,28 @@ export default function PlannerPage() {
               />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="travel-style">What kind of travel style do you prefer?</Label>
+              <Select
+                id="travel-style"
+                value={travelStyle}
+                onValueChange={(value) => setTravelStyle(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select travel style" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="adventure">Adventure</SelectItem>
+                  <SelectItem value="relaxation">Relaxation</SelectItem>
+                  <SelectItem value="cultural">Cultural</SelectItem>
+                  <SelectItem value="family">Family</SelectItem>
+                  <SelectItem value="solo">Solo</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+          </div>
+          <div className="flex-1 space-y-6">
+            <div className="space-y-2">
               <Label htmlFor="cuisine">What kind of cuisine do you prefer?</Label>
               <Select
                 id="cuisine"
@@ -212,25 +296,6 @@ export default function PlannerPage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="travel-style">What kind of travel style do you prefer?</Label>
-              <Select
-                id="travel-style"
-                value={travelStyle}
-                onValueChange={(value) => setTravelStyle(value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select travel style" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="adventure">Adventure</SelectItem>
-                  <SelectItem value="relaxation">Relaxation</SelectItem>
-                  <SelectItem value="cultural">Cultural</SelectItem>
-                  <SelectItem value="family">Family</SelectItem>
-                  <SelectItem value="solo">Solo</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
               <Label>Select the kind of activities you want to do</Label>
               <div className="flex flex-wrap gap-2">
                 {badgeData.map((badge) => (
@@ -246,8 +311,6 @@ export default function PlannerPage() {
                 ))}
               </div>
             </div>
-          </div>
-          <div className="flex-1 space-y-6">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="start-date">Start Date</Label>
@@ -299,26 +362,23 @@ export default function PlannerPage() {
                 <span>Person{peopleCount > 1 ? 's' : ''}</span>
               </div>
             </div>
-            {/* Empty div to take up vertical space */}
-            <div className="flex-1"></div>
+            {/* keep spacing balanced */}
           </div>
         </form>
-        <Button type="submit" className="w-full bg-green-600 text-white mt-6" onClick={(e)=>{
+        <div className="flex gap-3 mt-6">
+        <Button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white" onClick={(e)=>{
           if (!startDate || !endDate) { alert('Please select start and end dates'); return; }
           if (new Date(startDate) < new Date(new Date().toISOString().split('T')[0])) { alert('Start date cannot be in the past'); return; }
           if (new Date(endDate) <= new Date(startDate)) { alert('End date must be after start date'); return; }
           handleSubmit(e);
         }}>Create New Trip</Button>
+        <Button className="bg-violet-600 hover:bg-violet-700 text-white" onClick={async ()=>{ await handleAskAI(); await handleVendorLinks(); }}>Ask AI & Vendor Links</Button>
+        </div>
         <p className="mt-4 text-sm text-center text-muted-foreground">
           By clicking Create New Trip, you agree to our{" "}
-          <a href="#" className="text-red-500">
-            Terms and Conditions
-          </a>{" "}
+          <a href="/terms" className="text-cyan-700 underline">Terms and Conditions</a>{" "}
           and{" "}
-          <a href="#" className="text-red-500">
-            Privacy Policy
-          </a>
-          .
+          <a href="/privacy" className="text-cyan-700 underline">Privacy Policy</a>.
         </p>
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-60">
@@ -326,14 +386,81 @@ export default function PlannerPage() {
           </div>
         )}
       </Card>
-    <div className="w-full max-w-3xl text-xs text-muted-foreground mt-2">
-      <div className="flex flex-wrap gap-3">
-        <a className="underline" href="https://www.google.com/travel/flights" target="_blank" rel="noreferrer">Google Flights</a>
-        <a className="underline" href="https://www.skyscanner.net/" target="_blank" rel="noreferrer">Skyscanner</a>
-        <a className="underline" href="https://www.kayak.com/flights" target="_blank" rel="noreferrer">KAYAK</a>
-        <a className="underline" href="https://www.makemytrip.com/flights/" target="_blank" rel="noreferrer">MakeMyTrip</a>
+      <div className="w-full max-w-5xl mt-6">
+        <div className="relative">
+          <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-cyan-300 to-transparent" />
+          <div className="absolute inset-0 flex items-center justify-center -mt-3">
+            <span className="px-3 py-1 text-[10px] uppercase tracking-widest rounded-full bg-white/70 text-cyan-700 border border-cyan-200">Plan Assist</span>
+          </div>
+        </div>
       </div>
-    </div>
+      {/* Bot panel */}
+      <div className="w-full max-w-5xl mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="p-4">
+          <div className="font-semibold mb-2">AI Suggestions</div>
+          {botLoading ? <div>Thinking…</div> : (
+            <div className="space-y-3 text-sm">
+              {aiPlan?.overview && <div><span className="font-medium">Overview:</span> {aiPlan.overview}</div>}
+              {aiPlan?.flightWindows && (
+                <div>
+                  <div className="font-medium">Flight windows</div>
+                  {aiPlan.flightWindows.map((f,idx)=>(
+                    <div key={idx} className="text-xs">{f.departWindow} • {f.returnWindow}</div>
+                  ))}
+                </div>
+              )}
+              {aiPlan?.hotelAreas && (
+                <div>
+                  <div className="font-medium">Hotel areas</div>
+                  <ul className="list-disc pl-4">
+                    {aiPlan.hotelAreas.map((a,idx)=>(
+                      <li key={idx}><span className="font-medium">{a.area}</span>: {a.vibe} — {a.why}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {aiPlan?.dayThemes && (
+                <div>
+                  <div className="font-medium">Day themes</div>
+                  <ul className="list-disc pl-4">
+                    {aiPlan.dayThemes.slice(0,Math.min(5, aiPlan.dayThemes.length)).map((d)=>(
+                      <li key={d.day}>Day {d.day}: {d.theme} — {d.highlights.join(', ')}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {aiPlan?.tips && (
+                <div>
+                  <div className="font-medium">Tips</div>
+                  <ul className="list-disc pl-4">
+                    {aiPlan.tips.map((t,idx)=>(<li key={idx}>{t}</li>))}
+                  </ul>
+                </div>
+              )}
+              {!aiPlan && (
+                <pre className="whitespace-pre-wrap">{botMessages.map((m,i)=>`• ${m.content}`).join('\n')}</pre>
+              )}
+            </div>
+          )}
+        </Card>
+        <Card className="p-4">
+          <div className="font-semibold mb-2">Vendor Links</div>
+          <div className="text-sm space-y-2">
+            <div>
+              <div className="font-medium">Flights</div>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {vendorLinks.flights?.map((f,idx)=>(<a key={idx} className="underline" href={f.url} target="_blank" rel="noreferrer">{f.label}</a>))}
+              </div>
+            </div>
+            <div>
+              <div className="font-medium">Hotels</div>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {vendorLinks.hotels?.map((h,idx)=>(<a key={idx} className="underline" href={h.url} target="_blank" rel="noreferrer">{h.label}</a>))}
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
     </div>
   );
   

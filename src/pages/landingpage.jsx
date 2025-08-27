@@ -9,7 +9,7 @@ export function Header({ scrollToSection, refs }) {
       <div className="flex items-center justify-center">
         <Link to="#">
           <MountainIcon className="h-6 w-6" />
-          <span className="sr-only">AI Travel Planner</span>
+          <span className="sr-only">TripMate</span>
         </Link>
       </div>
       <nav className="ml-auto flex gap-4 sm:gap-6">
@@ -51,12 +51,10 @@ export  function HeroSection() {
           <div className="flex flex-col justify-center space-y-4">
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tighter text-white sm:text-5xl xl:text-6xl/none">
-                Unlock the World with AI Travel Planner
+                Unlock the World with TripMate
               </h1>
               <p className="max-w-[600px] text-white/80 md:text-xl">
-                Effortlessly plan your dream vacation with our AI-powered travel
-                planner. Personalized itineraries, cost-saving recommendations,
-                and explore the places on Google Maps
+                Effortlessly plan your dream vacation with TripMate: personalized itineraries, cost-saving tips, AI vendor links, quick booking for flights and hotels, and live maps to explore.
               </p>
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
@@ -98,6 +96,16 @@ export  function FeaturesSection() {
       title: "Real-Time Visualization",
       description:
         "Explore your destination with Google Maps integration and get directions to your favorite spots.",
+    },
+    {
+      title: "AI Vendor Linking",
+      description:
+        "Ask AI to suggest flight windows and hotel areas, then jump to booking sites with deep links.",
+    },
+    {
+      title: "Book Flights & Hotels",
+      description:
+        "Open Google Flights, Skyscanner, Booking.com, and Airbnb directly from your plan.",
     },
   ];
 
@@ -234,7 +242,7 @@ export  function CallToActionSection() {
 export  function Footer() {
   return (
     <footer className="flex h-24 items-center justify-center bg-white">
-      <p className="text-sm text-gray-600">© 2024 AI Travel Planner. All rights reserved.</p>
+      <p className="text-sm text-gray-600">© 2024 TripMate. All rights reserved.</p>
     </footer>
   );
 }

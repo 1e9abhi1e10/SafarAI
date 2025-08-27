@@ -4,6 +4,9 @@ import SignUpPage from './pages/SignupPage';
 import LoginPage from './pages/LoginPage';
 import PlannerPage from './pages/PlannerPage';
 import TravelPage from './pages/TravelPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
+import ContactPage from './pages/ContactPage';
 import { LoadScript } from '@react-google-maps/api';
 
 function App() {
@@ -17,6 +20,9 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/new-trip" element={<PlannerPage />} />
         <Route path="/travel" element={<TravelPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/contact" element={<ContactPage />} />
         {/* <Route path="/other" element={<OtherPage />} /> Example route for another page */}
       </Routes>
     </Router>

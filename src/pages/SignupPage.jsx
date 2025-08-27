@@ -49,7 +49,7 @@ export default function SignUpPage() {
       {/* <header className="px-4 lg:px-6 h-14 flex items-center">
         <Link to="/" className="flex items-center justify-center">
           <MountainIcon className="h-6 w-6" />
-          <span className="sr-only">AI Travel Planner</span>
+          <span className="sr-only">TripMate</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6">
           <Link to="/" className="text-sm font-medium hover:underline underline-offset-4">
@@ -165,7 +165,7 @@ export default function SignUpPage() {
         </div>
       </div>
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-        <p className="text-xs text-muted-foreground">&copy; 2024 AI Travel Planner. All rights reserved.</p>
+        <p className="text-xs text-muted-foreground">&copy; 2024 TripMate. All rights reserved.</p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
           <Link to="/terms" className="text-xs hover:underline underline-offset-4">
             Terms of Service

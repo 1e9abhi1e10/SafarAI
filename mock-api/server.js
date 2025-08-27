@@ -35,7 +35,7 @@ app.get('/api/geocode', async (req, res) => {
     if (!q) return res.status(400).json({ message: 'Missing query param q' });
     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`;
     const { data } = await axios.get(url, {
-      headers: { 'Accept-Language': 'en', 'User-Agent': 'safarai-local' },
+      headers: { 'Accept-Language': 'en', 'User-Agent': 'tripmate-local' },
       timeout: 8000,
     });
     return res.json(data);
@@ -100,6 +100,104 @@ app.post('/api/getPlaces', (req, res) => {
   };
 
   return res.json(response);
+});
+
+// AI endpoints (mock)
+app.post('/api/ai/plan', (req, res) => {
+  const {
+    startLocation = '',
+    destinationCountry = '',
+    startDate = '',
+    endDate = '',
+    budget = '',
+    tripDuration = 2,
+    travelStyle = '',
+    interests = ''
+  } = req.body || {};
+
+  const budgetNum = Number(String(budget).replace(/[^0-9.]/g, '')) || 0;
+  const tier = budgetNum < 500 ? 'budget' : budgetNum < 2000 ? 'mid' : 'premium';
+
+  const pick = (obj) => obj[tier];
+
+  const flightTemplates = {
+    budget: {
+      departWindow: 'Depart Tue–Thu 09:00–15:00',
+      returnWindow: 'Return Mon–Wed 10:00–16:00'
+    },
+    mid: {
+      departWindow: 'Depart Fri evening or Sat morning',
+      returnWindow: 'Return Sun afternoon or Mon morning'
+    },
+    premium: {
+      departWindow: 'Depart Sat–Sun morning non-stop',
+      returnWindow: 'Return Sat–Sun afternoon non-stop'
+    }
+  };
+
+  const hotelAreasCatalog = [
+    { area: 'City Center', vibe: 'Walkable, historic', why: 'Close to landmarks and dining' },
+    { area: 'Riverside/Waterfront', vibe: 'Scenic, relaxed', why: 'Evening strolls and cafes' },
+    { area: 'Arts District', vibe: 'Trendy, nightlife', why: 'Bars, galleries, late-night food' },
+  ];
+
+  const themes = ['Arrival + Orientation', 'Iconic Sights', 'Neighborhood Walks', 'Museums + Culture', 'Parks + Views', 'Food Crawl', 'Shopping + Markets'];
+  const numDays = Math.max(1, Number(tripDuration) || 2);
+  const dayThemes = Array.from({ length: numDays }, (_, i) => ({
+    day: i + 1,
+    theme: themes[i % themes.length],
+    highlights: [
+      `Top spot #${(i % 3) + 1} in ${destinationCountry}`,
+      `Local experience ${(i % 2) + 1}`
+    ]
+  }));
+
+  const overview = `Trip from ${startLocation || 'your city'} to ${destinationCountry} for ${numDays} day(s) ${startDate && endDate ? `(${startDate} → ${endDate})` : ''}. Style: ${travelStyle || 'Mixed'}. Interests: ${interests || 'General'}. Budget tier: ${tier}.`;
+
+  const tipsByTier = {
+    budget: [
+      'Use public transit day passes',
+      'Book museum tickets online for discounts',
+      'Choose neighborhood eateries over tourist zones'
+    ],
+    mid: [
+      'Mix ride-hailing with metro for efficiency',
+      'Prebook timed-entry attractions to skip lines',
+      'Target 3–4km walking loops per day'
+    ],
+    premium: [
+      'Prioritize non-stop flights and central hotels',
+      'Private guides for 1–2 key days',
+      'Book popular restaurants 2–3 weeks ahead'
+    ]
+  };
+
+  const response = {
+    overview,
+    flightWindows: [
+      { label: 'Suggested windows', ...pick(flightTemplates) }
+    ],
+    hotelAreas: hotelAreasCatalog,
+    dayThemes,
+    tips: tipsByTier[tier]
+  };
+
+  return res.json(response);
+});
+
+app.post('/api/ai/vendor-links', (req, res) => {
+  const { startLocation = '', destinationCountry = '', startDate = '', endDate = '' } = req.body || {};
+  const q = `${encodeURIComponent(startLocation)}-${encodeURIComponent(destinationCountry)}-${startDate}-${endDate}`;
+  return res.json({
+    flights: [
+      { label: 'Google Flights', url: `https://www.google.com/travel/flights?hl=en#flt=${q}` },
+      { label: 'Skyscanner', url: `https://www.skyscanner.net/transport/flights/${encodeURIComponent(startLocation)}/${encodeURIComponent(destinationCountry)}/${startDate}/${endDate}/` }
+    ],
+    hotels: [
+      { label: 'Booking.com', url: `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(destinationCountry)}&checkin=${startDate}&checkout=${endDate}` },
+      { label: 'Airbnb', url: `https://www.airbnb.com/s/${encodeURIComponent(destinationCountry)}/homes?checkin=${startDate}&checkout=${endDate}` }
+    ]
+  });
 });
 
 app.listen(PORT, () => {

@@ -81,6 +81,22 @@ const getCoordinates = async (place) => {
 };
 
 
+// Haversine distance in kilometers between two {lat,lng}
+const distanceKm = (a, b) => {
+  const toRad = (d) => (d * Math.PI) / 180;
+  const R = 6371;
+  const dLat = toRad(b.lat - a.lat);
+  const dLng = toRad(b.lng - a.lng);
+  const lat1 = toRad(a.lat);
+  const lat2 = toRad(b.lat);
+  const h =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1) * Math.cos(lat2) *
+      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  return 2 * R * Math.asin(Math.sqrt(h));
+};
+
+
 
 
 const TravelMap = ({ locations, center, zoom }) => {
@@ -98,7 +114,7 @@ const TravelMap = ({ locations, center, zoom }) => {
           <MapContainer center={[center.lat, center.lng]} zoom={zoom} style={{ width: '100%', height: '100%' }}>
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap contributors" />
             {locations.length > 1 && (
-              <LeafletPolyline positions={locations.filter(l => Number.isFinite(l?.lat) && Number.isFinite(l?.lng)).map(l => [l.lat, l.lng])} />
+              <LeafletPolyline positions={locations.filter(l => Number.isFinite(l?.lat) && Number.isFinite(l?.lng)).map(l => [l.lat, l.lng])} pathOptions={{ color: '#1e3a8a', weight: 3 }} />
             )}
             {locations.filter(l => Number.isFinite(l?.lat) && Number.isFinite(l?.lng)).map((l, idx) => (
               <LeafletMarker key={idx} position={[l.lat, l.lng]} />
@@ -198,14 +214,35 @@ export default function TravelPage() {
         // Seed with a coarse center so map can render even if geocoding fails
         setMapCenter(coarseCenter);
 
-        const coordinatesPromises = response.itinerary.flatMap(dayPlan =>
-          dayPlan.activities.map(activity => getCoordinates(activity.location))
+        // Collect all activity locations and prepend start location if provided
+        const activityPlaces = response.itinerary.flatMap(dayPlan =>
+          dayPlan.activities.map(activity => `${activity.location}, ${response.destinationCountry}`)
         );
+        const placesForPath = response.startLocation
+          ? [response.startLocation, ...activityPlaces]
+          : activityPlaces;
+
+        const coordinatesPromises = placesForPath.map(place => getCoordinates(place));
         const coordinates = await Promise.allSettled(coordinatesPromises);
-        const validCoordinates = coordinates
+        let validCoordinates = coordinates
           .filter(r => r.status === 'fulfilled' && r.value && Number.isFinite(r.value.lat) && Number.isFinite(r.value.lng))
           .map(r => r.value);
-        setMapsData(validCoordinates);
+        // Filter out outliers far from the destination center (bad geocodes)
+        if (validCoordinates.length > 1) {
+          const radiusKm = 500; // keep points within ~500km of destination center
+          validCoordinates = validCoordinates.filter((c) => distanceKm(c, coarseCenter) <= radiusKm);
+        }
+        if (validCoordinates.length >= 2) {
+          setMapsData(validCoordinates);
+        } else {
+          const jitter = 0.02;
+          const synthetic = [
+            { lat: coarseCenter.lat + jitter, lng: coarseCenter.lng },
+            { lat: coarseCenter.lat, lng: coarseCenter.lng + jitter },
+            { lat: coarseCenter.lat - jitter, lng: coarseCenter.lng - jitter }
+          ];
+          setMapsData(synthetic);
+        }
 
         // If any valid coordinate was found, recentre
         if (validCoordinates.length > 0) {
@@ -259,9 +296,12 @@ export default function TravelPage() {
 
               // Function to handle search action
               const searchPlaces = async () => {
-                const places = itinerary.flatMap(dayPlan =>
-                  dayPlan.activities.map(activity => activity.location)
+                const activityPlacesBtn = itinerary.flatMap(dayPlan =>
+                  dayPlan.activities.map(activity => `${activity.location}, ${destinationCountry}`)
                 );
+                const places = itineraryData.startLocation
+                  ? [itineraryData.startLocation, ...activityPlacesBtn]
+                  : activityPlacesBtn;
 
                 const coordinatesPromises = places.map(place => getCoordinates(place));
                 const coordinates = await Promise.all(coordinatesPromises);

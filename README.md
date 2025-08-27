@@ -1,93 +1,78 @@
-# SafarAI
-This is the Atlan Engineering Fellowship Task - 2024:
-SafarAI: Personalized Travel Itinerary Generator.
-### Visit the currently deployed version [**here**](https://safar-ai.streamlit.app/)
+# TripMate
+TripMate is an AI travel planner that helps you plan, visualize, and book trips.
 
-![atlan-gif](https://github.com/user-attachments/assets/956e33bc-8bee-43d8-b19a-ac5f3cc0915c)
-
-**SafarAI** is a travel planning application designed to generate detailed itineraries and travel checklists using advanced AI models. The application uses the Gemini model from Google Generative AI to create practical and enjoyable travel plans based on user inputs.
+Key capabilities:
+- Personalized itineraries based on your inputs (city, dates, budget, interests)
+- Cost-aware activity pricing and day-by-day schedules
+- Interactive map with geocoding fallbacks (Google → Mapbox → OSM)
+- AI vendor linking to propose flight windows and hotel areas
+- One-click deep links to Google Flights, Skyscanner, Booking.com, Airbnb
 
 ## Features
 
-- **Itinerary Generation**: Create comprehensive travel itineraries, including routes, daily activities, accommodation details, local events, and more.
-- **Travel Checklist**: Generate detailed checklists covering essential items to pack, travel documents, health & safety tips, and activity-specific items.
-- **Customizable Prompts**: Tailor prompts to generate itineraries and checklists according to various travel preferences and requirements.
-- **Streamlit Web Application**: A user-friendly interface for generating and downloading travel itineraries and checklists.
+- Personalized Itineraries: AI-tailored plans by dates, budget, and interests
+- Cost-Saving Recommendations: Budget-aware activity suggestions
+- Real-Time Visualization: Map view with markers and route polylines
+- AI Vendor Linking: AI suggests flight time windows and hotel neighborhoods
+- Book Flights & Hotels: Deep links to flight/hotel sites from your plan
 
-## Project Structure
+## Project Structure (frontend + mock API)
 
+Important folders:
+- `src/` React app (Vite)
+- `mock-api/` Local Express server with mock endpoints
+- `services/api.js` Shared Axios client with auth header
+- `src/pages/PlannerPage.jsx` Trip form + AI suggestions + vendor links
+- `src/pages/TravelPage.jsx` Itinerary details + map
+
+## Setup
+
+1) Clone and install
+```bash
+git clone https://github.com/1e9abhi1e10/SafarAI.git
+cd TripMate
+npm install
 ```
-SafarAI/
-│
-├── gemini_travel.py        # Contains the GeminiModel class for generating itineraries and checklists
-├── safarAI.py             # Streamlit application for user interaction
-├── requirements.txt       # Dependencies for the project
-└── README.md              # This file
+
+2) Environment (.env)
+```env
+VITE_BASE_URL=http://localhost:9000/api
+VITE_GOOGLE_MAP_API_KEY=
+VITE_MAPBOX_TOKEN=
 ```
 
-## Setup and Installation
-
-To get started with **SafarAI**, follow these steps:
-
-1. **Clone the Repository**:
-    ```bash
-    git clone https://github.com/1e9abhi1e10/SafarAI.git
-    cd SafarAI
-    ```
-
-2. **Install Dependencies**:
-    Ensure you have Python 3.7 or later installed. Then, create a virtual environment and install the required packages.
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-    pip install -r requirements.txt
-    ```
-
-3. **Set Up Environment Variables**:
-    Create a `.env` file in the root directory and add your Gemini API key.
-    ```plaintext
-    GEMINI_API_KEY=your_api_key_here
-    ```
+3) Run mock API and frontend
+```bash
+npm run api   # starts mock API at http://localhost:9000/api
+npm run dev   # starts Vite at http://localhost:5173/
+```
 
 ## Usage
 
-### Using the Streamlit Web Application
+## Usage
 
-1. **Run the Application**:
-    ```bash
-    streamlit run safarAI.py
-    ```
+- Go to `http://localhost:5173/`
+- Sign up or continue as guest
+- Open `/new-trip`
+- Fill start location, destination, dates, budget, interests
+- Click “Ask AI & Vendor Links” for suggestions and booking links
+- Click “Create New Trip” to generate itinerary and view the map
 
-2. **Access the Web Interface**:
-    Open your browser and navigate to `http://localhost:8501` to interact with the Streamlit application.
+Notes
+- Map routing starts from your entered start location
+- If geocoding keys are missing or network is blocked, the app falls back to coarse city coordinates
 
-3. **Generate Itineraries and Checklists**:
-    - Fill in the form with travel details.
-    - Submit the form to generate itineraries or checklists.
-    - Download the results as a PDF for your trip planning.
+## Tech
 
-### Instructions
-
-With the **Instructions** expander in the web application:
-
-1. Enter the starting location.
-2. Enter the travel destination.
-3. Provide the starting date.
-4. Provide the number of nights.
-5. Specify the trip type.
-6. Enter the group size.
-7. Provide the budget for the trip.
-8. Provide any special considerations.
-
-## Example Output
-
-### Here is the output for the 2-Night Mumbai Adventure on a Budget $500 (August 31st, 2024)
-
-![image](https://github.com/user-attachments/assets/84647d5d-4ecc-4427-8749-3c32b5f0634b)
+- React 18 + Vite
+- Tailwind + shadcn/ui components
+- Axios with auth interceptor
+- Google Maps JS API (optional), Mapbox (optional), Leaflet/OSM fallback
+- Express mock API (auth, itinerary, geocode proxy, AI suggestions, vendor links)
 
 ## Contributing
 
-Contributions to **SafarAI** are welcome! To contribute:
+Contributions to **TripMate** are welcome! To contribute:
 1. Fork the repository.
 2. Create a new branch (`git checkout -b feature/your-feature`).
 3. Make your changes and commit them (`git commit -am 'Add new feature'`).
@@ -98,7 +83,7 @@ Please ensure your code adheres to the existing style and includes appropriate t
 
 ## License
 
-**SafarAI** is licensed under the MIT License. See the [LICENSE](https://github.com/1e9abhi1e10/SafarAI/blob/master/LICENSE) file for more details.
+**TripMate** is licensed under the MIT License. See the [LICENSE](https://github.com/1e9abhi1e10/SafarAI/blob/master/LICENSE) file for more details.
 
 ## Acknowledgements
 
