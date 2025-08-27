@@ -65,21 +65,21 @@ const getCoordinates = async (place) => {
     }
   }
 
-  // Fallback to our backend proxy for OpenStreetMap Nominatim
-  try {
-    const base = import.meta.env.VITE_BASE_URL || 'http://localhost:9000/api';
-    const url = `${base}/geocode?q=${encodeURIComponent(place)}`;
-    const response = await axios.get(url, { headers: { 'Accept-Language': 'en' } });
-    if (Array.isArray(response.data) && response.data.length > 0) {
-      const { lat, lon } = response.data[0];
-      return { lat: parseFloat(lat), lng: parseFloat(lon) };
+    try {
+      const response = await api.get(`/geocode`, {
+        params: { q: place },
+        headers: { 'Accept-Language': 'en' }
+      });
+  
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        const { lat, lon } = response.data[0];
+        return { lat: parseFloat(lat), lng: parseFloat(lon) };
+      }
+    } catch (err) {
+      console.error('Geocoding failed for place:', place, err);
     }
-  } catch (err) {
-    console.error('Geocoding failed for place:', place, err);
+    return null;
   }
-  return null;
-};
-
 
 // Haversine distance in kilometers between two {lat,lng}
 const distanceKm = (a, b) => {
